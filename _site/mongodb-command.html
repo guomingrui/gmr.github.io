@@ -1,0 +1,90 @@
+
+
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <title></title>
+<style id="system" type="text/css">h1,h2,h3,h4,h5,h6,p,blockquote {    margin: 0;    padding: 0;}body {    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;    font-size: 13px;    line-height: 18px;    color: #737373;    margin: 10px 13px 10px 13px;}a {    color: #0069d6;}a:hover {    color: #0050a3;    text-decoration: none;}a img {    border: none;}p {    margin-bottom: 9px;}h1,h2,h3,h4,h5,h6 {    color: #404040;    line-height: 36px;}h1 {    margin-bottom: 18px;    font-size: 30px;}h2 {    font-size: 24px;}h3 {    font-size: 18px;}h4 {    font-size: 16px;}h5 {    font-size: 14px;}h6 {    font-size: 13px;}hr {    margin: 0 0 19px;    border: 0;    border-bottom: 1px solid #ccc;}blockquote {    padding: 13px 13px 21px 15px;    margin-bottom: 18px;    font-family:georgia,serif;    font-style: italic;}blockquote:before {    content:"C";    font-size:40px;    margin-left:-10px;    font-family:georgia,serif;    color:#eee;}blockquote p {    font-size: 14px;    font-weight: 300;    line-height: 18px;    margin-bottom: 0;    font-style: italic;}code, pre {    font-family: Monaco, Andale Mono, Courier New, monospace;}code {    background-color: #fee9cc;    color: rgba(0, 0, 0, 0.75);    padding: 1px 3px;    font-size: 12px;    -webkit-border-radius: 3px;    -moz-border-radius: 3px;    border-radius: 3px;}pre {    display: block;    padding: 14px;    margin: 0 0 18px;    line-height: 16px;    font-size: 11px;    border: 1px solid #d9d9d9;    white-space: pre-wrap;    word-wrap: break-word;}pre code {    background-color: #fff;    color:#737373;    font-size: 11px;    padding: 0;}@media screen and (min-width: 768px) {    body {        width: 748px;        margin:10px auto;    }}</style><style id="custom" type="text/css"></style></head>
+<body marginheight="0"><h1>mongodb命令</h1>
+<p><a href="/">返回主页</a>
+</p>
+<pre><code>//一般都可以加异常级别的条件
+use 数据库名----------切换数据库，不存在该数据库则创建
+db-----------------显示当前所在数据库名
+show dbs-------------------显示所有数据库及大小
+db.集合名.insert({键:值})-----------------插入文档到集合，如果集合不存在，则自动创建
+db.dropDatabase()-------------------删除当前数据库
+show tables------------------显示当前数据库里的所有的集合
+db.集合名.drop()----------------删除集合
+db.集合名.find(){键：值[查询条件]}-----------------查看已插入文档
+db.集合名.find().pretty(){键：值[查询条件]}-----------------以格式化方式查看已插入文档（比较美观）
+db.集合名.findOne(){键：值[查询条件]}-----------------只查看一个已插入文档
+db.集合名.save(document)------------与insert功能相同,但是insert不能替换，save可以替换，相当于saveOrUpdate
+db.集合名.update(
+{
+    {键:值}[表示查询条件],
+    {更新操作[如:$set]:{键:值}},
+    {
+         upset[可选,表示不存在是否插入,默认false,不插入]:boolean,
+         multi[可选，表示是否全部更新或只更新查出来的第一条，默认false只更新第一条]:boolean,`这里写代码片`
+         writeConcern[可选，表示抛出异常的级别]:&lt;document&gt;
+    }
+}
+db.集合名.remove({键:值[删除条件]},删除条数[可选，默认全删])</code></pre>
+<pre><code>$lt小于
+$gt大于
+$or:[{key1: value1},{key2:value2}] 或运算
+
+$type操作符是基于BSON类型来检索集合中匹配的数据类型----如{键:{$type:数字}}表示键下值为该数字表示类型的集合
+类型集合如下:
+Double 1
+String 2
+Object 3
+Array 4
+Binary data 5
+Undefined 6(已废弃)
+Object id 7
+Boolean 8
+Date 9
+Null 10
+Regular Expression 11
+JavaScript 13
+Symbol 14
+JavaScript (with scope) 15
+32-bit integer 16
+Timestamp 17
+64-bit integer 18
+Min key 255
+Max key 127
+
+
+limit(条数) --------------方法表示读取的条数
+skip(条数)----------表示跳过的条数
+sort(｛键:1或-1｝[可选，表示升序或降序，默认1升序])-------对结果进行排序
+db.集合名.ensureIndex({键:1或-1})-------建索引，1为升序建索引，-1为降序建索引，可以建复合索引，可以加条件，如后台平滑生成索引，删除重复记录等</code></pre>
+<pre><code>db.集合名.aggregate(聚合及其它操作的方式及条件等);
+表达式    描述    实例
+$sum    计算总和。  
+  db.mycol.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : "$likes"}}}])
+$avg    计算平均值    
+  db.mycol.aggregate([{$group : {_id : "$by_user", num_tutorial : {$avg : "$likes"}}}])
+$min    获取集合中所有文档对应值得最小值。   
+  db.mycol.aggregate([{$group : {_id : "$by_user", num_tutorial : {$min : "$likes"}}}])
+$max    获取集合中所有文档对应值得最大值。   
+  db.mycol.aggregate([{$group : {_id : "$by_user", num_tutorial : {$max : "$likes"}}}])
+$push    在结果文档中插入值到一个数组中。  
+  db.mycol.aggregate([{$group : {_id : "$by_user", url : {$push: "$url"}}}])
+$addToSet    在结果文档中插入值到一个数组中，但不创建副本。    
+  db.mycol.aggregate([{$group : {_id : "$by_user", url : {$addToSet : "$url"}}}])
+$first    根据资源文档的排序获取第一个文档数据。    
+  db.mycol.aggregate([{$group : {_id : "$by_user", first_url : {$first : "$url"}}}])
+$last    根据资源文档的排序获取最后一个文档数据   
+  db.mycol.aggregate([{$group : {_id : "$by_user", last_url : {$last : "$url"}}}])
+$project：修改输入文档的结构。可以用来重命名、增加或删除域，也可以用于创建计算结果以及嵌套文档。
+$match：用于过滤数据，只输出符合条件的文档。$match使用MongoDB的标准查询操作。
+$limit：用来限制MongoDB聚合管道返回的文档数。
+$skip：在聚合管道中跳过指定数量的文档，并返回余下的文档。
+$unwind：将文档中的某一个数组类型字段拆分成多条，每条包含数组中的一个值。
+$group：将集合中的文档分组，可用于统计结果。
+$sort：将输入文档排序后输出。
+$geoNear：输出接近某一地理位置的有序文档</code></pre>
+</body></html>
